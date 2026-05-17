@@ -1202,7 +1202,7 @@ async function startVoiceRecord(e) {
 
   voiceChunks  = [];
   voiceSeconds = 0;
-  voiceRecorder = new MediaRecorder(voiceStream, mimeType ? { mimeType } : {});
+  voiceRecorder = new MediaRecorder(voiceStream, mimeType ? { mimeType, audioBitsPerSecond: 32000 } : { audioBitsPerSecond: 32000 });
   voiceRecorder.ondataavailable = e => { if (e.data.size > 0) voiceChunks.push(e.data); };
   voiceRecorder.start(100); // collect chunks every 100ms
 
@@ -1279,7 +1279,7 @@ async function stopAndSendVoice() {
       file_size: duration   // repurpose file_size to store duration in seconds
     });
 
-    if (error) { showToast('Failed to send voice message', 'error'); return; }
+    if (error) { console.error('[Voice] Send error:', error.message, error); showToast('Error: ' + error.message, 'error'); return; }
 
     await client.from('conversations').update({ updated_at: now }).eq('id', activeConv.id);
 
